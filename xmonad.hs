@@ -19,6 +19,7 @@ import XMonad.Layout.NoBorders
 import XMonad.Layout.SimpleFloat
 import Control.Arrow ((***), second)
 import XMonad.Layout.PerWorkspace
+import XMonad.Config.Desktop (desktopLayoutModifiers)
 
  
 main = xmonad $ kde4Config
@@ -28,11 +29,13 @@ main = xmonad $ kde4Config
     , manageHook = manageHook kde4Config <+> myManageHook <+> manageDocks
     , focusedBorderColor = myFocusedBorderColor
     , borderWidth = myBorderWidth
-    , keys = \c -> myKeys c `M.union` keys defaultConfig c
+    , keys = \c -> myKeys c <+> keys kde4Config c
     , layoutHook = myLayouts
+    , mouseBindings = \x -> mouseBindings kde4Config x <+> myMouse x
     } `additionalKeysP` mySwitchScreensConfig
 
-myLayouts = onWorkspaces ["1", "3"] (tiled ||| Mirror tiled ||| Full) (tiled ||| Mirror tiled ||| Full) -- you could use Flip tiled on "left" screens..
+myLayouts = desktopLayoutModifiers $ 
+  onWorkspaces ["1", "3"] (tiled ||| Mirror tiled ||| Full) (tiled ||| Mirror tiled ||| Full) -- you could use Flip tiled on "left" screens..
     where
       tiled = Tall nmaster delta ratio
       nmaster = 1
@@ -55,7 +58,12 @@ myManageHook = composeAll . concat $
 
 myKeys (XConfig {modMask = modm}) = M.fromList
   [((myModMask, xK_p), spawn "synapse")
-  , ((myModMask .|. shiftMask, xK_q), spawn "dbus-send --print-reply --dest=org.kde")
+  ,((myModMask, xK_F4), kill)
+  ]
+
+myMouse x = M.fromList
+  [((0,button2), \w -> focus w >> kill)
+
   ]
 
 showLancelotViaDbusCommand = "dbus-send --print-reply --dest=org.kde.lancelot /Lancelot org.kde.lancelot.App.showCentered"
