@@ -64,7 +64,7 @@ myKeys (XConfig {modMask = modm}) = M.fromList
   ]
 
 myMouse x = M.fromList
-  [((0,button2), \w -> focus w >> kill)
+  [((myModMask,button2), \w -> focus w >> kill)
 
   ]
 
