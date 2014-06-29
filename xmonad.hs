@@ -70,7 +70,7 @@ myMouse x = M.fromList
 
 showLancelotViaDbusCommand = "dbus-send --print-reply --dest=org.kde.lancelot /Lancelot org.kde.lancelot.App.showCentered"
 
-myWorkspaces = ["1","2","3","4"]
+myWorkspaces = ["1","2","3","4","5","6","7","8","9"]
 
 myFocusedBorderColor = "#FFFF00"
 
