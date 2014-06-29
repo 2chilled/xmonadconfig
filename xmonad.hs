@@ -22,17 +22,19 @@ import XMonad.Layout.PerWorkspace
 import XMonad.Config.Desktop (desktopLayoutModifiers)
 
  
-main = xmonad $ kde4Config
+main = xmonad $ myBaseConfig
     { workspaces = myWorkspaces
     , modMask = myModMask -- use the Windows button as mod
-    , startupHook = startupHook kde4Config <+> setWMName "LG3D" 
-    , manageHook = manageHook kde4Config <+> myManageHook <+> manageDocks
+    , startupHook = startupHook myBaseConfig <+> setWMName "LG3D" 
+    , manageHook = manageHook myBaseConfig <+> myManageHook <+> manageDocks
     , focusedBorderColor = myFocusedBorderColor
     , borderWidth = myBorderWidth
-    , keys = \c -> myKeys c <+> keys kde4Config c
+    , keys = \c -> myKeys c <+> keys myBaseConfig c
     , layoutHook = myLayouts
-    , mouseBindings = \x -> mouseBindings kde4Config x <+> myMouse x
+    , mouseBindings = \x -> mouseBindings myBaseConfig x <+> myMouse x
     } `additionalKeysP` mySwitchScreensConfig
+
+myBaseConfig = kde4Config
 
 myLayouts = desktopLayoutModifiers $ 
   onWorkspaces ["1", "3"] (tiled ||| Mirror tiled ||| Full) (tiled ||| Mirror tiled ||| Full) -- you could use Flip tiled on "left" screens..
