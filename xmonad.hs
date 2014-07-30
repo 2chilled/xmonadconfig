@@ -31,10 +31,9 @@ main = xmonad $ myBaseConfig
     , manageHook = manageHook myBaseConfig <+> myManageHook <+> manageDocks
     , focusedBorderColor = myFocusedBorderColor
     , borderWidth = myBorderWidth
-    , keys = \c -> myKeys c <+> keys myBaseConfig c
     , layoutHook = myLayouts
     , mouseBindings = \x -> myMouse x <+> mouseBindings myBaseConfig x
-    } `additionalKeysP` mySwitchScreensConfig
+    } `additionalKeysP` myKeys
 
 myBaseConfig = kde4Config
 
@@ -66,14 +65,23 @@ myManageHook = composeAll . concat $
         otherNonFloats = ["Hamster-time-tracker", "Kmail"] -- open on desktop 2
         gimp           = ["Gimp-2.8"]
 
-myKeys (XConfig {modMask = modm}) = M.fromList
-  [((myModMask, xK_p), spawn "synapse")
-  ,((myModMask, xK_F4), kill)
-  ]
+myKeys = 
+  [
+    ("M-C-l",   spawn "qdbus org.freedesktop.ScreenSaver /ScreenSaver Lock")
+  , ("M-p",     spawn "synapse")
+  , ("M-<F4>",  kill)
+  ] <+> mySwitchScreensKeys
+    where
+      mySwitchScreensKeys = 
+        [ 
+          (mask ++ "M-" ++ [key], screenWorkspace scr >>= flip whenJust (windows . action))
+           | (key, scr)  <- zip "wer" [1,0,2] -- was [0..] *** change to match your screen order ***
+           , (action, mask) <- [ (W.view, "") , (W.shift, "S-")]
+        ]
 
 myMouse x = M.fromList
-  [((myModMask,button2), \w -> focus w >> kill)
-
+  [
+    ((myModMask,button2), \w -> focus w >> kill)
   ]
 
 showLancelotViaDbusCommand = "dbus-send --print-reply --dest=org.kde.lancelot /Lancelot org.kde.lancelot.App.showCentered"
@@ -86,12 +94,7 @@ myBorderWidth = 2
 
 myModMask = mod4Mask
 
-mySwitchScreensConfig = 
-  [ 
-    (mask ++ "M-" ++ [key], screenWorkspace scr >>= flip whenJust (windows . action))
-     | (key, scr)  <- zip "wer" [1,0,2] -- was [0..] *** change to match your screen order ***
-     , (action, mask) <- [ (W.view, "") , (W.shift, "S-")]
-  ]
+-- Not used actually
 
 ewmhCopyWindow :: Event -> X All
 ewmhCopyWindow ClientMessageEvent {
@@ -112,6 +115,6 @@ ewmhCopyWindow _ = return (All True)
 data Flip l a = Flip (l a) deriving (Show, Read)
 
 instance LayoutClass l a => LayoutClass (Flip l) a where    
-  runLayout (W.Workspace i (Flip l) ms) r = (map (second flipRect) *** fmap Flip)                                                `fmap` runLayout (W.Workspace i l ms) (flipRect r)
+  runLayout (W.Workspace i (Flip l) ms) r = (map (second flipRect) *** fmap Flip) `fmap` runLayout (W.Workspace i l ms) (flipRect r)
     where screenWidth = fromIntegral $ rect_width r                                               
           flipRect (Rectangle rx ry rw rh) = Rectangle (screenWidth - rx - fromIntegral rw) ry rw rh    
