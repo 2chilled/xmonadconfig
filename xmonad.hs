@@ -70,6 +70,7 @@ myKeys =
     ("M-C-l",   spawn "qdbus org.freedesktop.ScreenSaver /ScreenSaver Lock")
   , ("M-p",     spawn "synapse")
   , ("M-<F4>",  kill)
+  , ("<Print>", spawn "ksnapshot")
   ] <+> mySwitchScreensKeys
     where
       mySwitchScreensKeys = 
