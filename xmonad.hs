@@ -2,7 +2,7 @@
 -- FlexibleInstances and MultiParamTypeClasses are necessary for the LayoutClass instance declaration of Flip.
 
 import XMonad
-import XMonad.Config.Kde
+import XMonad.Config.Xfce
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.SetWMName     -- needed for java stuff
 import XMonad.Hooks.EwmhDesktops
@@ -23,19 +23,19 @@ import Control.Arrow ((***), second)
 import XMonad.Layout.PerWorkspace
 import XMonad.Config.Desktop (desktopLayoutModifiers)
 
- 
 main = xmonad $ myBaseConfig
     { workspaces = myWorkspaces
-    , modMask = myModMask -- use the Windows button as mod
+    , modMask = myModMask 
     , startupHook = startupHook myBaseConfig <+> setWMName "LG3D" 
-    , manageHook = manageHook myBaseConfig <+> myManageHook <+> manageDocks
+    --, manageHook = manageHook myBaseConfig <+> myManageHook <+> manageDocks
     , focusedBorderColor = myFocusedBorderColor
     , borderWidth = myBorderWidth
     , layoutHook = myLayouts
     , mouseBindings = \x -> myMouse x <+> mouseBindings myBaseConfig x
+    , terminal = "xfce4-terminal"
     } `additionalKeysP` myKeys
 
-myBaseConfig = kde4Config
+myBaseConfig = xfceConfig
 
 myLayouts = desktopLayoutModifiers $ 
   onWorkspaces [] (tiled ||| Flip tiled ||| Full) $ -- you could use Flip tiled on "left" screens..
@@ -58,7 +58,8 @@ myManageHook = composeAll . concat $
     , [ className   =? c --> doF (W.shift "gimp") | c <- gimp]
     ]
   where myFloats       = ["MPlayer", "Gimp", "plasma-desktop", "Plasma-desktop", "plasma", "Plasma", "krunner", 
-                         "yakuake", "Yakuake", "ksplashsimple", "ksplashqml", "ksplashx", "Synapse"]
+                         "yakuake", "Yakuake", "ksplashsimple", "ksplashqml", "ksplashx", "Synapse", "xfce4-panel",
+                         "TeamViewer.exe"]
         myOtherFloats  = ["alsamixer"]
         webApps        = ["Firefox"] -- open on desktop 1
         ircApps        = ["Pidgin", "Skype"] -- open on desktop 2
@@ -67,10 +68,10 @@ myManageHook = composeAll . concat $
 
 myKeys = 
   [
-    ("M-C-l",   spawn "qdbus org.freedesktop.ScreenSaver /ScreenSaver Lock")
+    ("M-C-l",   spawn "xflock4")
   , ("M-p",     spawn "synapse")
   , ("M-<F4>",  kill)
-  , ("<Print>", spawn "ksnapshot")
+  , ("<Print>", spawn "xfce4-screenshooter")
   ] <+> mySwitchScreensKeys
     where
       mySwitchScreensKeys = 
