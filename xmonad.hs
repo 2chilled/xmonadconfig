@@ -32,7 +32,7 @@ main = xmonad $ myBaseConfig
     , borderWidth = myBorderWidth
     , layoutHook = myLayouts
     , mouseBindings = \x -> myMouse x <+> mouseBindings myBaseConfig x
-    , terminal = "xfce4-terminal"
+    , terminal = "xfce4-terminal --default-working-directory=~/"
     } `additionalKeysP` myKeys
 
 myBaseConfig = xfceConfig
